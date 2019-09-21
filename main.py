@@ -3,7 +3,7 @@ import numpy as np
 import vtk
 
 from bodies.classes import Plate, Ball
-
+from callback import vtkTimerCallback
 
 
 def main():
@@ -16,10 +16,10 @@ def main():
 
     # Numeric parameters
     dt = 0.01
-    T = 1
-    N = int(T/dt)
+    fps = 60
+    delay_between_frames = 1000/fps
 
-
+    # Create renderer and render window
     ren = vtk.vtkRenderer()
     renWin = vtk.vtkRenderWindow()
     renWin.AddRenderer(ren)
@@ -34,8 +34,17 @@ def main():
 
     # enable user interface interactor
     iren.Initialize()
-    renWin.Render()
+
+    # Define callback class
+    callback = vtkTimerCallback(ren, renWin)
+    callback.data = {'plate':plate, 'ball': ball}
+    
+    iren.AddObserver('TimerEvent', callback.execute)
+    iren.AddObserver('KeyPressEvent', callback.keypress)
+    
+    iren.CreateRepeatingTimer(round(delay_between_frames)) # milliseconds between frames
     iren.Start()
+
 
 if __name__ == '__main__':
     main()
