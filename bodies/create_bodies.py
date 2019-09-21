@@ -20,16 +20,16 @@ def create_sphere(radius, position):
 
 
 def create_plane(point, normal):
-    cubeSource = vtk.vtkPlaneSource()
-    cubeSource.SetCenter(point)
-    cubeSource.SetNormal(normal)
+    planeSource = vtk.vtkPlaneSource()
+    planeSource.SetCenter(point)
+    planeSource.SetNormal(normal)
 
-    cubeMapper = vtk.vtkPolyDataMapper()
-    cubeMapper.SetInputConnection(cubeSource.GetOutputPort())
+    planeMapper = vtk.vtkPolyDataMapper()
+    planeMapper.SetInputConnection(planeSource.GetOutputPort())
 
-    cubeActor = vtk.vtkActor()
-    cubeActor.SetMapper(cubeMapper)
-    cubeActor.SetPosition(0, 0, 0)
-    cubeActor.GetProperty().SetColor(0, 0, 1)
+    planeActor = vtk.vtkActor()
+    planeActor.SetMapper(planeMapper)
+    planeActor.SetPosition(0, 0, 0)
+    planeActor.GetProperty().SetColor(0, 0, 1)
 
-    return cubeSource, cubeActor
+    return planeSource, planeActor
