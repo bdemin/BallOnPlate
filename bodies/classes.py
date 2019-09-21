@@ -43,7 +43,7 @@ class Ball(object):
         self.source, self.actor = create_sphere(self.radius, self.position)
 
 
-    def UpdatePosition(self, x_pos, y_pos, plane_normal, dt):
+    def Update_position(self, x_pos, y_pos, plane_normal, dt):
         pitch = np.arctan(plane_normal[0], plane_normal[2])
         roll = np.arctan(plane_normal[1], plane_normal[2])
         self.acc = [self.const*np.sin(pitch), self.const*np.sin(roll), 0]
@@ -51,11 +51,13 @@ class Ball(object):
         self.velocity += self.acc*dt
         self.position += self.velocity*dt
 
-    def GetLocalPosition(self, plane_normal):
+
+    def get_local_position(self, plane_normal):
         self.position = self.GetRotationMatrix(plane_normal) @ self.position
         return self.position
 
-    def GetRotationMatrix(self, plane_vector):
+
+    def get_rotation_matrix(self, plane_vector):
         base_vector = np.array((0,0,1))
 
         # Collinear vectors:
