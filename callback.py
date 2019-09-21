@@ -11,7 +11,8 @@ class vtkTimerCallback(object):
         pass
 
     def execute(self, obj, event):
-        # self.data
+        self.data['plate'].source.SetNormal(self.timer/100, 1, 0)
+        self.data['plate'].source.Update()
 
         obj.GetRenderWindow().Render()
         self.timer += 1
