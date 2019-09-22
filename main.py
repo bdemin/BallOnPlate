@@ -39,14 +39,13 @@ def main():
     # Define callback class
     callback = vtkTimerCallback(ren, renwin, iren)
     callback.data = {'plate':plate, 'ball': ball}
-    callback.normal = plate.normal
     
     iren.AddObserver('TimerEvent', callback.execute)
     iren.AddObserver('LeftButtonPressEvent', callback.mouse_button)
     iren.AddObserver('MouseMoveEvent', callback.mouse_move)
     iren.AddObserver('LeftButtonReleaseEvent', callback.mouse_button)
+    iren.AddObserver('RightButtonPressEvent', callback.mouse_button)
     
-
     iren.CreateRepeatingTimer(round(delay_between_frames)) # milliseconds between frames
     iren.Start()
 

@@ -25,13 +25,13 @@ class vtkTimerCallback(object):
         obj.GetRenderWindow().Render()
         self.timer += 1
 
-
     def mouse_button(self, obj, event):
         if event == "LeftButtonPressEvent":
             self.mouse_left_pressed = True
         elif event == "LeftButtonReleaseEvent":
             self.mouse_left_pressed = False
-
+        elif event == "RightButtonPressEvent":
+            self.data['plate'].update_normal((0,0,1))
 
     def mouse_move(self, obj, event):
         if self.mouse_left_pressed:
@@ -43,21 +43,9 @@ class vtkTimerCallback(object):
             x = xypos[0]
             y = xypos[1]
 
-            center = self.renwin.GetSize()
-            centerX = center[0]/2.0
-            centerY = center[1]/2.0
-
-
             factor = 0.001
             roll = np.sign(x - lastX) * factor
-            pitch = np.sign(y - lastY) * factor
+            pitch = np.sign(lastY - y) * factor
 
-            # normal = self.data['plate'].normal
-
-            self.normal = self.normal + np.array([pitch, roll, 0])
-            print(self.normal)
-            # updated_normal = map(lambda x,y: x+y, normal, [roll,pitch,0])
-
-            self.data['plate'].source.SetNormal(*self.normal)
-            self.data['plate'].source.Update()
+            self.data['plate'].update_normal(self.data['plate'].normal + np.array([pitch, roll, 0]))
             

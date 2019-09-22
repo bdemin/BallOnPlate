@@ -11,12 +11,16 @@ class Plate(object):
         # self.z = (-i*normal[0]*plate.xx - normal[1]*plate.yy - plate.d) * 1./normal[2]
         self.source, self.actor = create_plane(self.position, self.normal)
 
-        
     def TiltPlate(self, pitch, roll):
         self.angle = np.deg2rad(angle)
         self.y_coords = np.asarray([0.5-np.tan(self.angle)/2,
                                     0.5+np.tan(self.angle)/2])
         self.DrawPlate()
+
+    def update_normal(self, new_normal):
+        self.normal = np.array(new_normal)
+        self.source.SetNormal(*self.normal)
+        self.source.Update()
 
 
 class Ball(object):
