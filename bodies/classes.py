@@ -6,7 +6,7 @@ from bodies.create_bodies import create_plane, create_sphere
 
 class Plate(object):
     def __init__(self, normal):
-        self.normal = normal
+        self.normal = np.array(normal)
         self.position = (0, 0, 0)
         # self.z = (-i*normal[0]*plate.xx - normal[1]*plate.yy - plate.d) * 1./normal[2]
         self.source, self.actor = create_plane(self.position, self.normal)
@@ -43,7 +43,7 @@ class Ball(object):
         self.source, self.actor = create_sphere(self.radius, self.position)
 
 
-    def Update_position(self, x_pos, y_pos, plane_normal, dt):
+    def update_position(self, x_pos, y_pos, plane_normal, dt):
         pitch = np.arctan(plane_normal[0], plane_normal[2])
         roll = np.arctan(plane_normal[1], plane_normal[2])
         self.acc = [self.const*np.sin(pitch), self.const*np.sin(roll), 0]
