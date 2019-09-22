@@ -22,7 +22,6 @@ class vtkTimerCallback(object):
 
     def execute(self, obj, event):
         # self.data['plate'].source.SetNormal(*normal)
-
         obj.GetRenderWindow().Render()
         self.timer += 1
 
@@ -34,7 +33,6 @@ class vtkTimerCallback(object):
             self.mouse_left_pressed = False
 
 
-    # General high-level logic
     def mouse_move(self, obj, event):
         if self.mouse_left_pressed:
             lastXYpos = self.iren.GetLastEventPosition()
@@ -49,18 +47,17 @@ class vtkTimerCallback(object):
             centerX = center[0]/2.0
             centerY = center[1]/2.0
 
-            # print(lastX-x)
-            # print(lastY-y)
 
-            factor = 0.1
-            roll = np.sign(lastX - x) * factor
-            pitch = np.sign(lastY - y) * factor
+            factor = 0.001
+            roll = np.sign(x - lastX) * factor
+            pitch = np.sign(y - lastY) * factor
 
-            normal = self.data['plate'].normal
-            print(normal)
-            normal = normal + np.array([roll, pitch, 1])
-            print(normal)
+            # normal = self.data['plate'].normal
+
+            self.normal = self.normal + np.array([pitch, roll, 0])
+            print(self.normal)
             # updated_normal = map(lambda x,y: x+y, normal, [roll,pitch,0])
 
-            self.data['plate'].source.SetNormal(*normal)
+            self.data['plate'].source.SetNormal(*self.normal)
             self.data['plate'].source.Update()
+            

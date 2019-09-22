@@ -39,6 +39,7 @@ def main():
     # Define callback class
     callback = vtkTimerCallback(ren, renwin, iren)
     callback.data = {'plate':plate, 'ball': ball}
+    callback.normal = plate.normal
     
     iren.AddObserver('TimerEvent', callback.execute)
     iren.AddObserver('LeftButtonPressEvent', callback.mouse_button)
