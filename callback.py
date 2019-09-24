@@ -22,9 +22,17 @@ class vtkTimerCallback(object):
 
     def execute(self, obj, event):
         # self.data['plate'].source.SetNormal(*normal)
-        self.data['ball'].normal = self.data['plate'].normal
-        self.data['ball'].update_position(self.dt)
+        # self.data['ball'].normal = self.data['plate'].normal
+        # self.data['ball'].update_position(self.dt)
+        # self.data['ball'].place_ball()
+
+        normal = self.data['plate'].normal / np.linalg.norm(self.data['plate'].normal)
+        ball_z = self.data['ball'].radius / normal[2]
+
+        self.data['ball'].plate_pos = (0, 0, ball_z)
+        # self.data['ball'].update_position(self.dt)
         self.data['ball'].place_ball()
+
 
         obj.GetRenderWindow().Render()
         self.timer += 1
@@ -47,7 +55,7 @@ class vtkTimerCallback(object):
             x = xypos[0]
             y = xypos[1]
 
-            factor = 0.001
+            factor = 0.01
             roll = np.sign(x - lastX) * factor
             pitch = np.sign(lastY - y) * factor
 
