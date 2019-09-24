@@ -61,3 +61,10 @@ class vtkTimerCallback(object):
 
             self.data['plate'].update_normal(self.data['plate'].normal + np.array([pitch, roll, 0]))
             
+    def key_press(self, obj, event):
+        key = obj.GetKeySym()
+        if key == 'e':
+            self.iren.DestroyTimer()
+            self.iren.GetRenderWindow().Finalize()
+            self.iren.TerminateApp()
+            

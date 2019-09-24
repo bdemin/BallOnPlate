@@ -46,7 +46,8 @@ def main():
     iren.AddObserver('MouseMoveEvent', callback.mouse_move)
     iren.AddObserver('LeftButtonReleaseEvent', callback.mouse_button)
     iren.AddObserver('RightButtonPressEvent', callback.mouse_button)
-    
+    iren.AddObserver('KeyPressEvent', callback.key_press)
+
     iren.CreateRepeatingTimer(round(delay_between_frames)) # milliseconds between frames
     iren.Start()
 
