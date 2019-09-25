@@ -33,14 +33,16 @@ class Ball(object):
 
         plate_x_angle = np.arctan2(normal[0], normal[2])
         plate_y_angle = np.arctan2(normal[1], normal[2])
-        self.plate_acc = np.array((self.const * np.sin(plate_x_angle), self.const * np.sin(plate_y_angle), 0))
+        # self.plate_acc = np.array((self.const * np.sin(plate_x_angle), self.const * np.sin(plate_y_angle), 0))
 
         self.radius = radius
+        self.plate_acc = np.array((0, 0, 0))
         self.plate_pos = np.array((0, 0, 0))
         self.plate_vel = np.array((0, 0, 0))
+        self.world_pos = np.array((0, 0 ,0))
         self.normal = normal
 
-        self.source, self.actor = create_sphere(self.radius, self.plate_pos)
+        self.source, self.actor = create_sphere(self.radius, self.world_pos)
 
 
     def update_position(self, dt):
@@ -51,36 +53,46 @@ class Ball(object):
         self.plate_vel = self.plate_vel + self.plate_acc * dt
         self.plate_pos = self.plate_pos + self.plate_vel * dt
 
+        rot = self.rot_mat(plate_x_angle, plate_y_angle)
+        print(rot)
+        self.world_pos = self.plate_pos @ rot
+
 
     def get_local_position(self, plane_normal):
         self.position = self.GetRotationMatrix(plane_normal) @ self.position
         return self.position
 
 
-    def get_rotation_matrix(self):
-        base_vector = np.array((0,0,1))
+    def rot_mat(self, x, y):
+        sin = np.sin
+        cos = np.cos
+        matrix = []
 
-        # Collinear vectors:
-        if np.cross(self.normal, base_vector).all() == False:
-            return np.eye(3)
+        Cx = cos(x)
+        Cy = cos(y)
+        Cz = cos(0)
 
-        # Rotation matrix based on 2 vectors
-        v = np.cross(base_vector, self.normal)
-        u = v/np.linalg.norm(v)
-        c = np.dot(base_vector, self.normal)
-        h = (1 - c)/(1 - c**2)
+        Sx = sin(x)
+        Sy = sin(y)
+        Sz = sin(0)
 
-        vx, vy, vz = v
-        rot_matrix = np.array([[c + h*vx**2, h*vx*vy - vz, h*vx*vz + vy, 0],
-            [h*vx*vy+vz, c+h*vy**2, h*vy*vz-vx, 0],
-            [h*vx*vz - vy, h*vy*vz + vx, c+h*vz**2, 0],
-            [0, 0, 0, 1]])
-
-        return rot_matrix
-
+        matrix.append(Cy * Cz)
+        matrix.append(Cz * Sx * Sy-Cx * Sz)
+        matrix.append(Sx * Sz+Cx * Cz * Sy)
+        
+        matrix.append(Cy * Sz)
+        matrix.append(Cx * Cz+Sx * Sy * Sz)
+        matrix.append(Cx * Sy * Sz-Cz * Sx)
+        
+        matrix.append(-Sy)
+        matrix.append(Cy * Sx)
+        matrix.append(Cx * Cy)
+        
+        matrix = np.asarray(matrix).reshape(3,3)
+        return matrix
 
     def place_ball(self):
         trans = vtk.vtkTransform()
         trans.Identity()
-        trans.Translate(*self.plate_pos)
+        trans.Translate(*self.world_pos)
         self.actor.SetUserTransform(trans)
