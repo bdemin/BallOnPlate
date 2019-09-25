@@ -22,14 +22,14 @@ class vtkTimerCallback(object):
 
     def execute(self, obj, event):
         # self.data['plate'].source.SetNormal(*normal)
-        # self.data['ball'].normal = self.data['plate'].normal
-        # self.data['ball'].update_position(self.dt)
-        # self.data['ball'].place_ball()
+        self.data['ball'].normal = self.data['plate'].normal
+        self.data['ball'].update_position(self.dt)
+        self.data['ball'].place_ball()
 
-        normal = self.data['plate'].normal / np.linalg.norm(self.data['plate'].normal)
-        ball_z = self.data['ball'].radius / normal[2]
+        # normal = self.data['plate'].normal / np.linalg.norm(self.data['plate'].normal)
+        # ball_z = self.data['ball'].radius / normal[2]
 
-        self.data['ball'].plate_pos = (0, 0, ball_z)
+        # self.data['ball'].plate_pos = (0, 0, ball_z)
         # self.data['ball'].update_position(self.dt)
         self.data['ball'].place_ball()
 
