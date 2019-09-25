@@ -7,7 +7,7 @@ from callback import vtkTimerCallback
 
 
 def main():
-    ball_radius = 0.01
+    ball_radius = 0.02
     ball_position = (0, 0, ball_radius/2)
 
     normal = (0, 0, 1)
