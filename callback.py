@@ -31,9 +31,14 @@ class vtkTimerCallback(object):
 
         # self.data['ball'].plate_pos = (0, 0, ball_z)
         # self.data['ball'].update_position(self.dt)
-        self.data['ball'].place_ball()
-
-
+        
+        print(self.data['ball'].plate_pos)
+        if (np.abs(self.data['ball'].plate_pos) > 0.5).any():
+            self.data['plate'].update_normal((0, 0, 1))
+            self.data['ball'].plate_pos = np.array((0, 0, 0))
+            self.data['ball'].plate_vel = np.array((0, 0, 0))
+            self.data['ball'].plate_acc = np.array((0, 0, 0))
+        
         obj.GetRenderWindow().Render()
         self.timer += 1
 
