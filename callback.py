@@ -30,14 +30,7 @@ class vtkTimerCallback(object):
         
         # print(self.ball.plate_pos)
         if (np.abs(self.system.ball.pos_world) > 0.5).any():
-            self.system.update_normal((0, 0, 1))
-            # self.system.ball.plate_pos = np.array((0, 0, 0))
-            # self.system.ball.plate_vel = np.array((0, 0, 0))
-            # self.system.ball.plate_acc = np.array((0, 0, 0))
-
-            self.system.pos_world = np.array((0, 0, self.system.ball.radius/2))
-            self.system.vel_world = np.array((0, 0, 0))
-            self.system.acc_world = np.array((0, 0, 0))
+           self.system.reset()
         
         obj.GetRenderWindow().Render()
         self.timer += 1

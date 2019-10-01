@@ -71,6 +71,11 @@ class BallPlateSystem(object):
         self.plate.update(self.normal)
         self.ball.update(self.normal, self.dt)
 
+    def reset(self):
+        self.update_normal((0, 0, 1))
+        self.ball.pos_world = np.array((0, 0, self.ball.radius/2))
+        self.ball.vel_world = np.array((0, 0, 0))
+        self.ball.acc_world = np.array((0, 0, 0))
 
 class Plate(object):
     # 
