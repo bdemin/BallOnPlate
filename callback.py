@@ -41,6 +41,8 @@ class vtkTimerCallback(object):
         elif event == "LeftButtonReleaseEvent":
             self.mouse_left_pressed = False
         elif event == "RightButtonPressEvent":
+            if np.array_equal(self.system.normal, (0,0,1)):
+                self.system.kill()
             self.system.reset()
 
     def mouse_move(self, obj, event):
@@ -58,13 +60,6 @@ class vtkTimerCallback(object):
             pitch = np.sign(lastY - y) * factor
 
             self.system.update_normal(self.system.normal + np.array([pitch, roll, 0]))
-            
-    def key_press(self, obj, event):
-        key = obj.GetKeySym()
-        if key == 'e':
-            self.iren.DestroyTimer()
-            self.iren.GetRenderWindow().Finalize()
-            self.iren.TerminateApp()
             
     def MouseWheelForwardEvent(self, obj, event):
         radius_delta = 0.005

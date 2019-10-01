@@ -56,7 +56,6 @@ class BallPlateSystem(object):
         self.iren.AddObserver('MouseMoveEvent', callback.mouse_move)
         self.iren.AddObserver('LeftButtonReleaseEvent', callback.mouse_button)
         self.iren.AddObserver('RightButtonPressEvent', callback.mouse_button)
-        self.iren.AddObserver('KeyPressEvent', callback.key_press)
         self.iren.AddObserver('MouseWheelForwardEvent', callback.MouseWheelForwardEvent)
         self.iren.AddObserver('MouseWheelBackwardEvent', callback.MouseWheelBackwardEvent)
 
@@ -75,6 +74,12 @@ class BallPlateSystem(object):
         self.ball.pos_world = np.array((0, 0, self.ball.radius/2))
         self.ball.vel_world = np.array((0, 0, 0))
         self.ball.acc_world = np.array((0, 0, 0))
+
+    def kill(self):
+        # Quit program
+        self.iren.DestroyTimer()
+        self.iren.GetRenderWindow().Finalize()
+        self.iren.TerminateApp()
 
 class Plate(object):
     # Class defining the plate using a vtkPlate object
