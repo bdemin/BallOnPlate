@@ -93,7 +93,7 @@ class Ball(object):
     def __init__(self, radius, normal):
         # Physical parameters
         self.radius = radius
-        ball_mass = 0.25
+        ball_mass = 1
         ball_I = (2/5) * ball_mass * radius**2
         self.const = scipy.constants.g \
             / (1 + (ball_I/(ball_mass * radius**2)))
@@ -115,7 +115,7 @@ class Ball(object):
 
         # Fix z value according to the plate's normal
         self.pos_world[2] = (-self.pos_world[0]*normal[0] - \
-            self.pos_world[1]*normal[1]) / normal[2]
+            self.pos_world[1]*normal[1]) / normal[2] + self.radius
 
         self.source.SetCenter(self.pos_world)
         self.source.Update()
