@@ -41,7 +41,7 @@ class vtkTimerCallback(object):
         elif event == "LeftButtonReleaseEvent":
             self.mouse_left_pressed = False
         elif event == "RightButtonPressEvent":
-            self.system.update_normal((0,0,1))
+            self.system.reset()
 
     def mouse_move(self, obj, event):
         if self.mouse_left_pressed:
