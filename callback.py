@@ -12,6 +12,7 @@ class vtkTimerCallback(object):
         self.renwin = renwin
         self.iren = iren
 
+        # Define camera
         cam_distance = (1, 1, 1)
         self.camera = vtkCamera()
         self.renderer.SetActiveCamera(self.camera)
@@ -21,8 +22,11 @@ class vtkTimerCallback(object):
 
 
     def execute(self, obj, event):
+        # Repetitive function
+
         self.system.update_positions()
-        
+
+        # Reset system if ball went too far
         if (np.abs(self.system.ball.pos_world) > 0.5).any():
            self.system.reset()
         
@@ -30,6 +34,8 @@ class vtkTimerCallback(object):
         self.timer += 1
 
     def mouse_button(self, obj, event):
+        # Mouse button events handler
+
         if event == "LeftButtonPressEvent":
             self.mouse_left_pressed = True
         elif event == "LeftButtonReleaseEvent":
@@ -40,6 +46,8 @@ class vtkTimerCallback(object):
             self.system.reset()
 
     def mouse_move(self, obj, event):
+        # Function to handle plate orientation using mouse dragging
+
         if self.mouse_left_pressed:
             lastXYpos = self.iren.GetLastEventPosition()
             lastX = lastXYpos[0]
@@ -56,11 +64,13 @@ class vtkTimerCallback(object):
             self.system.update_normal(self.system.normal + np.array([pitch, roll, 0]))
             
     def MouseWheelForwardEvent(self, obj, event):
-        radius_delta = 0.005
-        mass_delta = 0.125
-        self.system.ball.update_params(radius_delta, mass_delta)
+        # Mouse wheel events handler
+
+        wheel_direction = 1
+        self.system.ball.update_params(wheel_direction)
         
     def MouseWheelBackwardEvent(self, obj, event):
-        radius_delta = -0.005
-        mass_delta = -0.125
-        self.system.ball.update_params(radius_delta, mass_delta)
+        # Mouse wheel events handler
+
+        wheel_direction = -1
+        self.system.ball.update_params(wheel_direction)

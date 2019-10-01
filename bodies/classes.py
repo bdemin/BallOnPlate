@@ -127,7 +127,9 @@ class Ball(object):
         self.source.SetCenter(self.pos_world)
         self.source.Update()
 
-    def update_params(self, radius_delta, mass_delta):
+    def update_params(self, wheel_direction):
+        radius_delta = wheel_direction * 0.005
+        mass_delta = wheel_direction * 0.125
         check_val = self.radius + radius_delta
         if check_val < 0.01 or check_val > 0.4:
             return
