@@ -66,3 +66,12 @@ class vtkTimerCallback(object):
             self.iren.GetRenderWindow().Finalize()
             self.iren.TerminateApp()
             
+    def MouseWheelForwardEvent(self, obj, event):
+        radius_delta = 0.005
+        mass_delta = 0.125
+        self.system.ball.update_params(radius_delta, mass_delta)
+        
+    def MouseWheelBackwardEvent(self, obj, event):
+        radius_delta = -0.005
+        mass_delta = -0.125
+        self.system.ball.update_params(radius_delta, mass_delta)
