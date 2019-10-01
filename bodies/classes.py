@@ -3,60 +3,118 @@ import scipy.constants
 
 import vtk
 
+from callback import vtkTimerCallback
+
 from bodies.create_bodies import create_plane, create_sphere
 
 
-class Plate(object):
-    def __init__(self, normal):
-        self.normal = np.array(normal)
-        self.position = (0, 0, 0)
-        # self.z = (-i*normal[0]*plate.xx - normal[1]*plate.yy - plate.d) * 1./normal[2]
-        self.source, self.actor = create_plane(self.position, self.normal)
+class BallPlateSystem(object):
+    # Class to store all the visualization objects and data
 
-    def TiltPlate(self, pitch, roll):
-        self.angle = np.deg2rad(angle)
-        self.y_coords = np.asarray([0.5-np.tan(self.angle)/2,
-                                    0.5+np.tan(self.angle)/2])
-        self.DrawPlate()
+    def __init__(self, normal, radius):
+        self.normal = normal
+        self.radius = radius
+
+        self.plate = Plate(self.normal)
+        self.ball = Ball(self.radius, self.normal)
+
+        fps = 60
+        self.frame_delay = round(1000 / fps)
+        self.dt = 0.01
+
+
+    def init_visualization(self):
+        # Initialize the graphical section of the simulation
+
+        # Create renderer and render window
+        self.ren = vtk.vtkRenderer()
+        self.renwin = vtk.vtkRenderWindow()
+        self.renwin.AddRenderer(self.ren)
+
+        # Create an interactor
+        self.iren = vtk.vtkRenderWindowInteractor()
+        self.iren.SetInteractorStyle(None)
+        self.iren.SetRenderWindow(self.renwin)
+
+        # Assign actors to the renderer
+        self.ren.AddActor(self.plate.actor)
+        self.ren.AddActor(self.ball.actor)
+
+        self.iren.Initialize()
+
+    def init_callback(self):
+        # Initialize the repeating callback
+
+        # Define callback class
+        callback = vtkTimerCallback(self.ren, self.renwin, self.iren)
+        callback.system = self
+
+        # Add keyboard and mouse observers
+        ## can move this section to CallBack?
+        self.iren.AddObserver('TimerEvent', callback.execute)
+        self.iren.AddObserver('LeftButtonPressEvent', callback.mouse_button)
+        self.iren.AddObserver('MouseMoveEvent', callback.mouse_move)
+        self.iren.AddObserver('LeftButtonReleaseEvent', callback.mouse_button)
+        self.iren.AddObserver('RightButtonPressEvent', callback.mouse_button)
+        self.iren.AddObserver('KeyPressEvent', callback.key_press)
+     
+        self.iren.CreateRepeatingTimer(self.frame_delay) # milliseconds between frames
+
 
     def update_normal(self, new_normal):
-        self.normal = np.array(new_normal)
-        self.source.SetNormal(*self.normal)
+        self.normal = new_normal
+        # self.plate.normal = np.array(new_normal)
+        # self.ball.normal = np.array(new_normal)
+
+
+    def update_positions(self):
+        self.plate.update(self.normal)
+        self.ball.update(self.normal, self.dt)
+
+
+class Plate(object):
+    # 
+
+    def __init__(self, normal):
+        position = (0, 0, 0)
+        self.source, self.actor = create_plane(position, normal)
+
+    def update(self, normal):
+        self.source.SetNormal(normal)
         self.source.Update()
 
 
 class Ball(object):
+    # 
+
     def __init__(self, radius, normal):
+        self.radius = radius
         ball_mass = 0.25
         ball_I = (2/5) * ball_mass * radius**2
-        self.const = scipy.constants.g/(1+(ball_I/(ball_mass*radius**2)))
+        self.const = scipy.constants.g \
+            / (1 + (ball_I/(ball_mass * radius**2)))
 
+        self.pos_world = np.array((0, 0, radius/2))
+        self.vel_world = np.array((0, 0, 0))
+        self.acc_world = np.array((0, 0, 0))
+
+        self.source, self.actor = create_sphere(radius, self.pos_world)
+
+    def update(self, normal, dt):
         plate_x_angle = np.arctan2(normal[0], normal[2])
         plate_y_angle = np.arctan2(normal[1], normal[2])
-        # self.plate_acc = np.array((self.const * np.sin(plate_x_angle), self.const * np.sin(plate_y_angle), 0))
 
-        self.radius = radius
-        self.plate_acc = np.array((0, 0, 0))
-        self.plate_pos = np.array((0, 0, 0))
-        self.plate_vel = np.array((0, 0, 0))
-        self.world_pos = np.array((0, 0 ,0))
-        self.normal = normal
+        self.acc_world = np.array((self.const * np.sin(plate_x_angle), self.const * np.sin(plate_y_angle), 0))
+        self.vel_world = self.vel_world + self.acc_world * dt
+        self.pos_world = self.pos_world + self.vel_world * dt
 
-        self.source, self.actor = create_sphere(self.radius, self.world_pos)
+        # Fix Z value
+        normalized_normal = normal / np.linalg.norm(normal)
+        ball_z = self.radius / normalized_normal[2]
+        self.pos_world[2] = ball_z
 
-
-    def update_position(self, dt):
-        plate_x_angle = np.arctan2(self.normal[0], self.normal[2])
-        plate_y_angle = np.arctan2(self.normal[1], self.normal[2])
-        self.plate_acc = np.array((self.const * np.sin(plate_x_angle), self.const * np.sin(plate_y_angle), 0))
-
-        self.plate_vel = self.plate_vel + self.plate_acc * dt
-        self.plate_pos = self.plate_pos + self.plate_vel * dt
-
-        rot = self.rot_mat(plate_x_angle, plate_y_angle)
-        print(rot)
-        self.world_pos = self.plate_pos @ rot
-
+        self.source.SetCenter(self.pos_world)
+        self.source.Update()
 
     def get_local_position(self, plane_normal):
         self.position = self.GetRotationMatrix(plane_normal) @ self.position
