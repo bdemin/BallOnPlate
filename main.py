@@ -6,7 +6,7 @@ from bodies.classes import BallPlateSystem
 
 
 def main():
-    ball_radius = 0.02
+    ball_radius = 0.04
     plane_normal = (0, 0, 1)
 
     system = BallPlateSystem(plane_normal, ball_radius)

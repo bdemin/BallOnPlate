@@ -53,7 +53,7 @@ class vtkTimerCallback(object):
             x = xypos[0]
             y = xypos[1]
 
-            factor = 0.01
+            factor = 0.005
             roll = np.sign(x - lastX) * factor
             pitch = np.sign(lastY - y) * factor
 
