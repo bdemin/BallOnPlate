@@ -108,9 +108,10 @@ class Ball(object):
         self.vel_world = self.vel_world + self.acc_world * dt
         self.pos_world = self.pos_world + self.vel_world * dt
 
-        # Fix Z value
-        normalized_normal = normal / np.linalg.norm(normal)
-        ball_z = self.radius / normalized_normal[2]
+        # Fix z value
+        n = normal
+        p = self.pos_world
+        ball_z = (-p[0]*n[0]- p[1]*n[1]) / n[2]
         self.pos_world[2] = ball_z
 
         self.source.SetCenter(self.pos_world)
