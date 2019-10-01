@@ -22,13 +22,7 @@ class vtkTimerCallback(object):
 
     def execute(self, obj, event):
         self.system.update_positions()
-        # self.system.ball.place_ball()
-
-     
-        # self.ball.plate_pos = (0, 0, ball_z)
-        # self.ball.update_position(self.dt)
         
-        # print(self.ball.plate_pos)
         if (np.abs(self.system.ball.pos_world) > 0.5).any():
            self.system.reset()
         
