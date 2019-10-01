@@ -60,39 +60,38 @@ class BallPlateSystem(object):
      
         self.iren.CreateRepeatingTimer(self.frame_delay) # milliseconds between frames
 
-
     def update_normal(self, new_normal):
         self.normal = new_normal
-        # self.plate.normal = np.array(new_normal)
-        # self.ball.normal = np.array(new_normal)
-
 
     def update_positions(self):
         self.plate.update(self.normal)
         self.ball.update(self.normal, self.dt)
 
     def reset(self):
+        # Reset the system to initial values
         self.update_normal((0, 0, 1))
         self.ball.pos_world = np.array((0, 0, self.ball.radius/2))
         self.ball.vel_world = np.array((0, 0, 0))
         self.ball.acc_world = np.array((0, 0, 0))
 
 class Plate(object):
-    # 
+    # Class defining the plate using a vtkPlate object
 
     def __init__(self, normal):
         position = (0, 0, 0)
         self.source, self.actor = create_plane(position, normal)
 
     def update(self, normal):
+        # Update normal and plane source
         self.source.SetNormal(normal)
         self.source.Update()
 
 
 class Ball(object):
-    # 
+    # Class defining the ball using vtkSphere object
 
     def __init__(self, radius, normal):
+        # Physical parameters
         self.radius = radius
         ball_mass = 0.25
         ball_I = (2/5) * ball_mass * radius**2
@@ -106,6 +105,7 @@ class Ball(object):
         self.source, self.actor = create_sphere(radius, self.pos_world)
 
     def update(self, normal, dt):
+        # Calculate ball position iteratively
         plate_x_angle = np.arctan2(normal[0], normal[2])
         plate_y_angle = np.arctan2(normal[1], normal[2])
 
@@ -113,11 +113,9 @@ class Ball(object):
         self.vel_world = self.vel_world + self.acc_world * dt
         self.pos_world = self.pos_world + self.vel_world * dt
 
-        # Fix z value
-        n = normal
-        p = self.pos_world
-        ball_z = (-p[0]*n[0]- p[1]*n[1]) / n[2]
-        self.pos_world[2] = ball_z
+        # Fix z value according to the plate's normal
+        self.pos_world[2] = (-self.pos_world[0]*normal[0] - \
+            self.pos_world[1]*normal[1]) / normal[2]
 
         self.source.SetCenter(self.pos_world)
         self.source.Update()
