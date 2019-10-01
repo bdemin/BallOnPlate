@@ -57,7 +57,9 @@ class BallPlateSystem(object):
         self.iren.AddObserver('LeftButtonReleaseEvent', callback.mouse_button)
         self.iren.AddObserver('RightButtonPressEvent', callback.mouse_button)
         self.iren.AddObserver('KeyPressEvent', callback.key_press)
-     
+        self.iren.AddObserver('MouseWheelForwardEvent', callback.MouseWheelForwardEvent)
+        self.iren.AddObserver('MouseWheelBackwardEvent', callback.MouseWheelBackwardEvent)
+
         self.iren.CreateRepeatingTimer(self.frame_delay) # milliseconds between frames
 
     def update_normal(self, new_normal):
@@ -93,10 +95,10 @@ class Ball(object):
     def __init__(self, radius, normal):
         # Physical parameters
         self.radius = radius
-        ball_mass = 1
-        ball_I = (2/5) * ball_mass * radius**2
+        self.mass = 1
+        ball_I = (2/5) * self.mass * self.radius**2
         self.const = scipy.constants.g \
-            / (1 + (ball_I/(ball_mass * radius**2)))
+            / (1 + (ball_I/(self.mass * self.radius**2)))
 
         self.pos_world = np.array((0, 0, radius/2))
         self.vel_world = np.array((0, 0, 0))
@@ -119,6 +121,20 @@ class Ball(object):
 
         self.source.SetCenter(self.pos_world)
         self.source.Update()
+
+    def update_params(self, radius_delta, mass_delta):
+        check_val = self.radius + radius_delta
+        if check_val < 0.01 or check_val > 0.4:
+            return
+
+        self.radius += radius_delta
+        self.source.SetRadius(self.radius)
+        self.source.Update()
+
+        self.mass += mass_delta
+        ball_I = (2/5) * self.mass * self.radius**2
+        self.const = scipy.constants.g \
+            / (1 + (ball_I/(self.mass * self.radius**2)))
 
     def get_local_position(self, plane_normal):
         self.position = self.GetRotationMatrix(plane_normal) @ self.position
