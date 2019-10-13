@@ -12,5 +12,16 @@ def main():
     system.iren.Start()
 
 
+def rl_model(system):
+    # Input
+    ball_pos = system.ball.pos_world
+    ball_vel = system.ball.vel_world
+    ball_acc = system.ball.acc_world
+
+    # Output
+    plate_normal = system.plane_normal
+    
+
+
 if __name__ == '__main__':
     main()
